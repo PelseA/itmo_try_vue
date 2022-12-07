@@ -1,23 +1,51 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
+import { RouterLink, RouterView, useRouter, useRoute } from "vue-router";
+import { useTodosStore } from "@/stores/todos";
+import { storeToRefs } from "pinia";
+import { ref, Transition, KeepAlive } from "vue";
+import Routes from "@/consts/Routes";
 
+const todoStore = useTodosStore();
+const { numberOfTodos } = storeToRefs(todoStore);
+
+const router = useRouter();
+
+const isCurrentRouteIndex = () => {
+  const route = useRoute();
+  const result = route.path === "/";
+  console.log("isCurrentRouteIndex:", result);
+  return result;
+};
+
+const canRenderNumberOfTodos = ref(isCurrentRouteIndex());
+</script>
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
+    <img
+      alt="Vue logo"
+      class="logo"
+      src="@/assets/logo.svg"
+      width="125"
+      height="125"
+    />
+    <div v-if="canRenderNumberOfTodos">Todos created: {{ numberOfTodos }}</div>
+    <div>Current route: {{ $route.path }}</div>
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
       <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
+        <RouterLink :to="Routes.HOME">Todos</RouterLink>
+        <RouterLink :to="Routes.COUNTER">Counter</RouterLink>
+        <!--     можно так   <RouterLink to="/counter">Counter</RouterLink>-->
+        <RouterLink :to="Routes.ABOUT">About</RouterLink>
       </nav>
     </div>
   </header>
-
-  <RouterView />
+  <main>
+    <RouterView v-slot="{ Component }">
+      <KeepAlive>
+        <component :is="Component" />
+      </KeepAlive>
+    </RouterView>
+  </main>
 </template>
 
 <style scoped>
