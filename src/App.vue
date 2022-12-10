@@ -19,14 +19,15 @@ const isCurrentRouteIndex = () => {
 
 const canRenderNumberOfTodos = ref(isCurrentRouteIndex());
 </script>
+
 <template>
   <header>
     <img
       alt="Vue logo"
       class="logo"
       src="@/assets/logo.svg"
-      width="125"
-      height="125"
+      width="25"
+      height="25"
     />
     <div v-if="canRenderNumberOfTodos">Todos created: {{ numberOfTodos }}</div>
     <div>Current route: {{ $route.path }}</div>
@@ -40,8 +41,10 @@ const canRenderNumberOfTodos = ref(isCurrentRouteIndex());
     </div>
   </header>
   <main>
+    <!-- <KeepAlive></KeepAlive> кэширует и не вызывает setup, onMounted
+      то, что не нужно кэшировать, помечается exclude -->
     <RouterView v-slot="{ Component }">
-      <KeepAlive>
+      <KeepAlive exclude="TodoItemView">
         <component :is="Component" />
       </KeepAlive>
     </RouterView>
@@ -96,9 +99,7 @@ nav a:first-of-type {
   }
 
   header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
+    margin: 2rem 0;
   }
 
   nav {
